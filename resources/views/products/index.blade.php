@@ -50,17 +50,30 @@
 			        		<tr>
 			        			<th>#</th>
 			        			<th>ID</th>
+			        			<th>Category</th>
+			        			<th>Age</th>
+			        			<th>Weight</th>
+			        			<th>Gender</th>
 			        			<th>Status</th>
 			        			<th class="text-end">Action</th>
 			        		</tr>
 			        	</thead>
 			        	<tbody>
 			        		@foreach($products as $product)
+
+			        		@php
+			        			$product_detail = \App\Models\ProductDetail::where('product_id', $product->id)->latest('id')->first();
+			        		@endphp
+			        		
 			        		<tr>
 			        			<td>
 			        				{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
 			        			</td>
 			        			<td>{{$product->unique_id}}</td>
+			        			<td>{{$product_detail->category->name}}</td>
+			        			<td>{{$product_detail->age}} {{$product_detail->age_type}}</td>
+			        			<td>{{$product_detail->weight}}</td>
+			        			<td>{{$product_detail->gender->name}}</td>
 			        			<td>
 			        				@if($product->status == 1)
 			        					<span class="fw-bold badge bg-soft-success text-success">Active</span>

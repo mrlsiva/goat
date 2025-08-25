@@ -36,8 +36,8 @@ class productController extends Controller
             'category' => 'required',
             'gender' => 'required',
             'age_type' => 'required',
-            'age' => 'required',
-            'weight' => 'required',
+            'age' => 'required|numeric|min:1',
+            'weight' => 'required|numeric|min:1',
         ], 
         [
             'category.required' => 'Category is required.',
@@ -182,8 +182,18 @@ class productController extends Controller
     public function download(Request $request,$id)
     {
         $product = Product::with('details')->findOrFail($id);
+        $detail = ProductDetail::where('product_id', $product->id)->latest('id')->first();
 
-        $qrCode = QrCode::size(300)->generate(url('/products/'.$product->id.'/view'));
+        $details = "Product: {$product->unique_id}\n\n"
+         . "Category: {$detail->category->name}\n\n"
+         . "Age: {$detail->age} {$detail->age_type}\n\n"
+         . "Weight: {$detail->weight}\n\n"
+         . "More: " . url('/products/'.$product->id.'/view');
+
+
+        $qrCode = \QrCode::size(300)->generate($details);
+
+        //$qrCode = QrCode::size(300)->generate(url('/products/'.$product->id.'/view'));
 
         return view('products.qrcode', compact('qrCode','product'));
         

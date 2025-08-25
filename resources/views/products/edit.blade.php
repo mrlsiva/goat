@@ -145,13 +145,13 @@
 						<!-- Age -->
 				        <div class="mb-3">
 				          <label for="age" class="form-label">Age</label>
-				          <input type="number" class="form-control" id="age" name="age" placeholder="Enter age" required min="1">
+				          <input type="text" class="form-control" id="age" name="age" placeholder="Enter age" required >
 				        </div>
 
 				        <!-- Weight -->
 				        <div class="mb-3">
 				          <label for="weight" class="form-label">Weight (In Kgs)</label>
-				          <input type="number" class="form-control" id="weight" name="weight" placeholder="Enter Weight" required min="1">
+				          <input type="text" class="form-control" id="weight" name="weight" placeholder="Enter Weight" required >
 				        </div>
 
 						<!-- Status Dropdown -->
