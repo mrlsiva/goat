@@ -123,8 +123,8 @@ class productController extends Controller
             'category' => 'required',
             'gender' => 'required',
             'age_type' => 'required',
-            'age' => 'required',
-            'weight' => 'required',
+            'age' => 'required|numeric|min:1',
+            'weight' => 'required|numeric|min:1',
         ], 
         [
             'category.required' => 'Category is required.',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Category;
@@ -19,7 +20,7 @@ class categoryController extends Controller
     {
 
         $validatedData = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:50|unique:categories',
         ], 
         [
             'name.required' => 'Name is required.',
@@ -39,13 +40,18 @@ class categoryController extends Controller
 
     public function update(Request $request)
     {
+        
+
         $request->validate([
-            'category' => 'required|string|max:50',
+            'category' => ['required','string','max:50',
+                Rule::unique('categories', 'name')->ignore($request->category_id), // specify column if needed
+            ],
             'category_id' => 'required',
         ], 
         [
             'category.required' => 'Name is required.',
         ]);
+
 
         DB::beginTransaction();
 
