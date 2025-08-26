@@ -42,9 +42,22 @@
 <body class="bg-light">
 	<div class="qr-container">
 		@foreach($products as $product)
-		<div class="qr-item">
-			{!! QrCode::size(100)->generate(url('/products/'.$product->id.'/view')) !!}
-		</div>
+
+			@php
+			    $detail = \App\Models\ProductDetail::where([['product_id', $product->id],['is_delete',0]])->latest('id')->first();
+			@endphp
+
+			<div class="qr-item">
+				{!! QrCode::size(100)->generate(
+				    "Product: {$product->unique_id}\n\n".
+				    "Gender: {$detail->gender->name}\n\n".
+				    "Category: {$detail->category->name}\n\n".
+				    "Age: {$detail->age} {$detail->age_type}\n\n".
+				    "Weight: {$detail->weight}\n\n".
+				    "More: " . url('/products/'.$product->id.'/view')
+				) !!}
+			</div>
+			
 		@endforeach
 
 		<!-- Add more QR codes as needed -->
