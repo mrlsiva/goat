@@ -12,6 +12,9 @@
 	 	<div class="container mt-5">
 		    <div class="d-flex justify-content-between align-items-center mb-4">
 		      	<h2 class="fw-bold">Product Detail</h2>
+		      	@auth
+		      	<a href="{{route('product.edit', ['id' => $product->id])}}" class="btn bg-primary text-white btn-sm">Edit</a>
+		      	@endauth
 		    </div>
 
 		    <div class="card">
@@ -28,14 +31,26 @@
 						@endif
 			        </p>
 
+			        @php
+			        	$detail = \App\Models\ProductDetail::where([['product_id', $product->id],['is_delete',0]])->latest('id')->first();
+			        @endphp
+
+			        <p>
+			        	Category: 						    
+			        	<span class="fw-bold">{{$detail->category->name}}</span>
+			        </p>
+
+			        <p>
+			        	Gender: 						    
+			        	<span class="fw-bold">{{$detail->gender->name}}</span>
+			        </p>
+
 			        <h5>Product Details</h5>
 			        @if($product->details && count($product->details) > 0)
 			            <table class="table table-bordered">
 			                <thead>
 			                    <tr>
 			                        <th>Image</th>
-			                        <th>Gender</th>
-			                        <th>Category</th>
 			                        <th>Age</th>
 			                        <th>Weight(In Kgs)</th>
 			                        <th>Updated On</th>
@@ -47,8 +62,6 @@
 			                            <td>
 			                                <img src="{{ asset('storage/' . $detail->image) }}" class="logo-dark me-1" alt="Product" height="50">
 			                            </td>
-			                            <td>{{ $detail->gender->name }}</td>
-			                            <td>{{ $detail->category->name }}</td>
 			                            <td>{{ $detail->age }} {{ $detail->age_type }}</td>
 			                            <td>{{ $detail->weight }}</td>
 			                            <td>{{ \Carbon\Carbon::parse($detail->created_at)->format('d M Y') }}</td>

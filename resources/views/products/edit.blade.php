@@ -23,6 +23,12 @@
 		      	<h2 class="fw-bold">Product Detail</h2>
 		    </div>
 
+		    @if(session('success'))
+			    <div class="alert alert-success">
+			    	<strong>Congratulations! </strong>{{ session('success') }}<br>
+			    </div>
+		    @endif
+				    
 		    <div class="card">
 			    <div class="card-body">
 			    	<div class="d-flex justify-content-between align-items-center mb-4">
@@ -41,17 +47,30 @@
 						@endif
 			        </p>
 
+			        @php
+			        	$detail = \App\Models\ProductDetail::where([['product_id', $product->id],['is_delete',0]])->latest('id')->first();
+			        @endphp
+
+			        <p>
+			        	Category: 						    
+			        	<span class="fw-bold">{{$detail->category->name}}</span>
+			        </p>
+
+			        <p>
+			        	Gender: 						    
+			        	<span class="fw-bold">{{$detail->gender->name}}</span>
+			        </p>
+
 			        <h5>Product Details</h5>
 			        @if($product->details && count($product->details) > 0)
 			            <table class="table table-bordered">
 			                <thead>
 			                    <tr>
 			                        <th>Image</th>
-			                        <th>Gender</th>
-			                        <th>Category</th>
 			                        <th>Age</th>
 			                        <th>Weight(In Kgs)</th>
 			                        <th>Updated On</th>
+			                        <th class="text-end">Action</th>
 			                    </tr>
 			                </thead>
 			                <tbody>
@@ -60,11 +79,21 @@
 			                            <td>
 			                                <img src="{{ asset('storage/' . $detail->image) }}" class="logo-dark me-1" alt="Product" height="50">
 			                            </td>
-			                            <td>{{ $detail->gender->name }}</td>
-			                            <td>{{ $detail->category->name }}</td>
 			                            <td>{{ $detail->age }} {{ $detail->age_type }}</td>
 			                            <td>{{ $detail->weight }}</td>
 			                            <td>{{ \Carbon\Carbon::parse($detail->created_at)->format('d M Y') }}</td>
+			                            <td class="text-end">
+			                            	@if($loop->iteration > 1)
+				                            	<a href="{{ route('product.delete', ['id' => $detail->id]) }}" onclick="return confirm('Are you sure you want to delete this product?')">
+												    <button class="btn btn-sm btn-danger">
+												        <i class="fa fa-trash" title="Delete"></i>
+												    </button>
+												</a>
+
+			        						@else
+			        							-
+			        						@endif
+			                            </td>
 			                        </tr>
 			                    @endforeach
 			                </tbody>
@@ -79,21 +108,15 @@
 			    <div class="card-body">
 
 			    	@if ($errors->any())
-		    <div class="alert alert-danger">
-		    	<strong>Whoops!</strong> There were some problems with your input.<br><br>
-		    	<ul>
-		    		@foreach ($errors->all() as $error)
-		    		<li>{{ $error }}</li>
-		    		@endforeach
-		    	</ul>
-		    </div>
-		    @endif
-
-			    	@if(session('success'))
-				    <div class="alert alert-success">
-				    	<strong>Congratulations! </strong>{{ session('success') }}<br>
-				    </div>
-				    @endif
+					    <div class="alert alert-danger">
+					    	<strong>Whoops!</strong> There were some problems with your input.<br><br>
+					    	<ul>
+					    		@foreach ($errors->all() as $error)
+					    		<li>{{ $error }}</li>
+					    		@endforeach
+					    	</ul>
+					    </div>
+		    		@endif
 
 			        <h4>Update</h4>
 			        <form method="post" action="{{route('product.update')}}" enctype="multipart/form-data">

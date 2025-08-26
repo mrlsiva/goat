@@ -62,7 +62,7 @@
 			        		@foreach($products as $product)
 
 			        		@php
-			        			$product_detail = \App\Models\ProductDetail::where('product_id', $product->id)->latest('id')->first();
+			        			$product_detail = \App\Models\ProductDetail::where([['product_id', $product->id],['is_delete',0]])->latest('id')->first();
 			        		@endphp
 			        		
 			        		<tr>

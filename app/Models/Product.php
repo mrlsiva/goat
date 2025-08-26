@@ -12,6 +12,6 @@ class Product extends Model
 
     public function details()
     {
-        return $this->hasMany(ProductDetail::class);
+        return $this->hasMany(ProductDetail::class)->where('is_delete', 0);
     }
 }

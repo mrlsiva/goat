@@ -137,8 +137,8 @@ class productController extends Controller
         DB::beginTransaction();
 
         // In your controller store method
-        $product = Product::find($request->id)->first();
-        $detail = ProductDetail::latest('product_id',$request->id)->first();
+        $product = Product::where('id',$request->id)->first();
+        $detail = ProductDetail::where([['product_id',$request->id],['is_delete',0]])->latest('id')->first();
 
         $product->update([ 
             'status' => $request->status,
@@ -168,7 +168,7 @@ class productController extends Controller
         else
         {
             
-            $product_detail = ProductDetail::where('id',$product_detail->id)->first();
+            $product_detail = ProductDetail::where([['id',$product_detail->id],['is_delete',0]])->first();
             $product_detail->update(['image'=> $detail->image]);
         }
 
@@ -179,10 +179,17 @@ class productController extends Controller
 
     }
 
+    public function delete(Request $request,$id)
+    {
+        $product = ProductDetail::where('id',$id)->update(['is_delete'=> 1]);
+
+        return redirect()->back()->with('success', 'Product deleted successfully.');
+    }
+
     public function download(Request $request,$id)
     {
         $product = Product::with('details')->findOrFail($id);
-        $detail = ProductDetail::where('product_id', $product->id)->latest('id')->first();
+        $detail = ProductDetail::where([['product_id', $product->id],['is_delete',0]])->latest('id')->first();
 
         $details = "Product: {$product->unique_id}\n\n"
          . "Category: {$detail->category->name}\n\n"
