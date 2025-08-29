@@ -21,7 +21,7 @@
 			</button>
 
 		    <div class="d-flex justify-content-between align-items-center mb-4">
-		      	<h2 class="fw-bold">Product</h2>
+		      	<h2 class="fw-bold">{{auth()->user()->name}}</h2>
 		      	<div>
 		      		<a href="{{route('category.index')}}">
 			    		<button class="btn btn-primary">Category</button>
