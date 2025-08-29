@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Category;
@@ -12,7 +13,7 @@ class categoryController extends Controller
 {
     public function index()
     { 
-        $categories = Category::where('is_active',1)->paginate(10);
+        $categories = Category::where('user_id',Auth::id())->paginate(10);
         return view('categories.index',compact('categories'));
     }
 
@@ -20,7 +21,11 @@ class categoryController extends Controller
     {
 
         $validatedData = $request->validate([
-            'name' => 'required|string|max:50|unique:categories',
+            'name' => ['required','string','max:50',
+                Rule::unique('categories')->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
+                }),
+            ],
         ], 
         [
             'name.required' => 'Name is required.',
@@ -29,6 +34,7 @@ class categoryController extends Controller
         DB::beginTransaction();
 
         $category = Category::create([ 
+            'user_id' => Auth::id(),
             'name' => Str::ucfirst($request->name),
             'is_active' => 1,
         ]);
@@ -44,7 +50,9 @@ class categoryController extends Controller
 
         $request->validate([
             'category' => ['required','string','max:50',
-                Rule::unique('categories', 'name')->ignore($request->category_id), // specify column if needed
+                Rule::unique('categories')->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
+                })->ignore($request->category_id), // ignore current category id
             ],
             'category_id' => 'required',
         ], 

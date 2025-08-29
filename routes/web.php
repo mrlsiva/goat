@@ -35,6 +35,7 @@ Route::group(['middleware' => ['web','auth']], function (){
             Route::get('/{id}/edit',[productController::class, 'edit'])->name('edit');
             Route::post('/update',[productController::class, 'update'])->name('update');
             Route::get('/{id}/delete',[productController::class, 'delete'])->name('delete');
+            Route::get('/{id}/detail_delete',[productController::class, 'detail_delete'])->name('detail_delete');
             Route::get('/{id}/download',[productController::class, 'download'])->name('download');
             Route::get('/download_all',[productController::class, 'download_all'])->name('download_all');
         });

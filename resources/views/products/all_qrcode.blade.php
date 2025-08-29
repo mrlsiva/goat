@@ -59,39 +59,6 @@
 			</div>
 			
 		@endforeach
-
-		<!-- Add more QR codes as needed -->
-	</div>
-	<div class="container mt-5  d-none">
-
-		<div class="card shadow-sm">
-			<div class="card-body">
-				<table class="table table-bordered table-striped">
-					<thead class="table-dark">
-						<tr>
-							<th>#</th>
-							<th>Product ID</th>
-							<th class="text-end">QR Code</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach($products as $product)
-						<tr>
-							<td>
-								{{ $loop->iteration }}
-							</td>
-							<td>
-								{{$product->unique_id}}
-							</td>
-							<td class="text-end">
-								{!! QrCode::size(100)->generate(url('/products/'.$product->id.'/view')) !!}
-							</td>
-						</tr>
-						@endforeach
-					</tbody>
-				</table>
-			</div>
-		</div>
 	</div>
 
 	<!-- Bootstrap JS -->

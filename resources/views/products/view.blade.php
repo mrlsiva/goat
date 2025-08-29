@@ -60,7 +60,11 @@
 			                    @foreach($product->details as $detail)
 			                        <tr>
 			                            <td>
-			                                <img src="{{ asset('storage/' . $detail->image) }}" class="logo-dark me-1" alt="Product" height="50">
+			                                @if($detail->image != null)
+			                                	<img src="{{ asset('storage/' . $detail->image) }}" class="logo-dark me-1" alt="Product" height="50">
+			                                @else
+			                                	<img src="{{ asset('no-image-icon.jpg') }}" class="logo-dark me-1" alt="Product" height="50">
+			                                @endif
 			                            </td>
 			                            <td>{{ $detail->age }} {{ $detail->age_type }}</td>
 			                            <td>{{ $detail->weight }}</td>

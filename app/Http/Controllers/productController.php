@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\ProductDetail;
 use Illuminate\Support\Str;
@@ -16,13 +16,13 @@ class productController extends Controller
 {
     public function index(Request $request)
     {  
-        $products = Product::paginate(10);
+        $products = Product::where([['user_id',Auth::id()],['is_delete',0]])->paginate(10);
         return view('products.index',compact('products'));
     }
 
     public function create(Request $request)
     {
-        $categories = Category::where('is_active',1)->get();
+        $categories = Category::where([['is_active',1],['user_id',Auth::id()]])->get();
         $genders = Gender::where('is_active',1)->get();
 
         return view('products.create',compact('categories','genders'));
@@ -50,7 +50,7 @@ class productController extends Controller
         DB::beginTransaction();
 
         // In your controller store method
-        $lastProduct = Product::latest('id')->first();
+        $lastProduct = Product::where('user_id',Auth::id())->latest('id')->first();
 
         if ($lastProduct) {
             // Extract number part from unique_id and increment
@@ -65,6 +65,7 @@ class productController extends Controller
         $uniqueId = 'P-' . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
 
         $product = Product::create([ 
+            'user_id' => Auth::id(),
             'unique_id' => $uniqueId,
             'status' => 1,
         ]);
@@ -181,6 +182,13 @@ class productController extends Controller
 
     public function delete(Request $request,$id)
     {
+        $product = Product::where('id',$id)->update(['is_delete'=> 1]);
+
+        return redirect()->back()->with('success', 'Product deleted successfully.');
+    }
+
+    public function detail_delete(Request $request,$id)
+    {
         $product = ProductDetail::where('id',$id)->update(['is_delete'=> 1]);
 
         return redirect()->back()->with('success', 'Product deleted successfully.');
@@ -208,7 +216,7 @@ class productController extends Controller
 
     public function download_all(Request $request)
     {
-        $products = Product::with('details')->get();
+        $products = Product::with('details')->where([['user_id',Auth::id()],['is_delete',0]])->get();
 
         return view('products.all_qrcode', compact('products'));
 

@@ -91,7 +91,10 @@
 			        					<button class="btn btn-sm btn-success"><i class="fa fa-download"></i> Print QR</button>
 			        				</a>
 			        				<a href="{{route('product.edit', ['id' => $product->id])}}">
-			        					<button class="btn btn-sm btn-danger"><i class="fa fa-edit"></i> Update</button>
+			        					<button class="btn btn-sm btn-warning"><i class="fa fa-edit"></i> Update</button>
+			        				</a>
+			        				<a href="{{route('product.delete', ['id' => $product->id])}}" onclick="return confirm('Are you sure you want to delete this product?')">
+			        					<button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> Delete</button>
 			        				</a>
 			        			</td>
 			        		</tr>

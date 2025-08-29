@@ -29,11 +29,21 @@ class loginController extends Controller
 
         if (Auth::attempt($credentials)) {
 
-             return redirect('products/index');
+            $user = User::where('id',auth()->user()->id)->first();
+
+            if($user->role_id == 2)
+            {
+
+                return redirect('products/index');
+            }
+            else
+            {
+                return redirect('login')->with('error', 'Admin cant login!');
+            }
         }
         else
         {
-             return redirect('login')->with('error', 'Invalid Credentials!');
+            return redirect('login')->with('error', 'Invalid Credentials!');
         }
     }
 

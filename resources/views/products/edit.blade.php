@@ -77,14 +77,18 @@
 			                    @foreach($product->details as $detail)
 			                        <tr>
 			                            <td>
-			                                <img src="{{ asset('storage/' . $detail->image) }}" class="logo-dark me-1" alt="Product" height="50">
+			                            	@if($detail->image != null)
+			                                	<img src="{{ asset('storage/' . $detail->image) }}" class="logo-dark me-1" alt="Product" height="50">
+			                                @else
+			                                	<img src="{{ asset('no-image-icon.jpg') }}" class="logo-dark me-1" alt="Product" height="50">
+			                                @endif
 			                            </td>
 			                            <td>{{ $detail->age }} {{ $detail->age_type }}</td>
 			                            <td>{{ $detail->weight }}</td>
 			                            <td>{{ \Carbon\Carbon::parse($detail->created_at)->format('d M Y') }}</td>
 			                            <td class="text-end">
 			                            	@if($loop->iteration > 1)
-				                            	<a href="{{ route('product.delete', ['id' => $detail->id]) }}" onclick="return confirm('Are you sure you want to delete this product?')">
+				                            	<a href="{{ route('product.detail_delete', ['id' => $detail->id]) }}" onclick="return confirm('Are you sure you want to delete this product?')">
 												    <button class="btn btn-sm btn-danger">
 												        <i class="fa fa-trash" title="Delete"></i>
 												    </button>
