@@ -41,6 +41,12 @@ class productController extends Controller
             'age_type' => 'required',
             'age' => 'required|numeric|min:1',
             'weight' => 'required|numeric|min:1',
+            'purchased_amount' => 'required|numeric|min:1',
+            'unique_number' => ['nullable','string','max:20',
+                Rule::unique('products')->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
+                }),
+            ],
         ];
 
         $messages = [
@@ -49,6 +55,7 @@ class productController extends Controller
             'age_type.required' => 'Age Type is required.',
             'age.required'      => 'Age is required.',
             'weight.required'   => 'Weight is required.',
+            'purchased_amount.required'   => 'Purchased Amount is required.',
         ];
 
         $validator=Validator::make($request->all(),$rules,$messages);
@@ -77,6 +84,7 @@ class productController extends Controller
         $product = Product::create([ 
             'user_id' => Auth::id(),
             'unique_id' => $uniqueId,
+            'unique_number' => $request->unique_number,
             'status' => 1,
         ]);
 
@@ -87,6 +95,7 @@ class productController extends Controller
             'age_type' => $request->age_type,
             'age' => $request->age,
             'weight' => $request->weight,
+            'purchased_amount' => $request->purchased_amount,
         ]);
 
         if ($request->hasFile('image')) {
@@ -118,6 +127,8 @@ class productController extends Controller
             'age' => 'required|numeric|min:1',
             'weight' => 'required|numeric|min:1',
             'status' => 'required',
+            'purchased_amount' => 'required|numeric|min:1',
+            'sold_amount' => ['nullable','numeric','min:1','required_if:status,3'],
         ];
         $messages = [
             'category_id.required' => 'Category is required.',
@@ -126,6 +137,8 @@ class productController extends Controller
             'age.required'      => 'Age is required.',
             'weight.required'   => 'Weight is required.',
             'status.required'   => 'Status is required.',
+            'purchased_amount.required'   => 'Purchased Amount is required.',
+            'sold_amount.required_if' => 'The sold amount is required when status is sold out.'
         ];
 
         $validator=Validator::make($request->all(),$rules,$messages);
@@ -151,6 +164,8 @@ class productController extends Controller
             'age_type' => $request->age_type,
             'age' => $request->age,
             'weight' => $request->weight,
+            'purchased_amount' => $request->purchased_amount,
+            'sold_amount' => $request->sold_amount,
         ]);
 
         if ($request->hasFile('image')) {

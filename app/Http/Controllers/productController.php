@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProductsExport;
+use App\Exports\ProductExport;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Models\ProductDetail;
 use Illuminate\Support\Str;
@@ -16,7 +20,19 @@ class productController extends Controller
 {
     public function index(Request $request)
     {  
-        $products = Product::where([['user_id',Auth::id()],['is_delete',0]])->paginate(10);
+        $query = Product::where([
+            ['user_id', Auth::id()],
+            ['is_delete', 0],
+        ]);
+
+        if ($request->filled('product_id')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('unique_id', 'like', "%{$request->product_id}%")
+                  ->orWhere('unique_number', 'like', "%{$request->product_id}%");
+            });
+        }
+
+        $products = $query->paginate(10);
         return view('products.index',compact('products'));
     }
 
@@ -38,6 +54,12 @@ class productController extends Controller
             'age_type' => 'required',
             'age' => 'required|numeric|min:1',
             'weight' => 'required|numeric|min:1',
+            'purchased_amount' => 'required|numeric|min:1',
+            'unique_number' => ['nullable','string','max:20',
+                Rule::unique('products')->where(function ($query) {
+                    return $query->where('user_id', Auth::id());
+                }),
+            ],
         ], 
         [
             'category.required' => 'Category is required.',
@@ -45,6 +67,7 @@ class productController extends Controller
             'age_type.required' => 'Age Type is required.',
             'age.required'      => 'Age is required.',
             'weight.required'   => 'Weight is required.',
+            'purchased_amount.required'   => 'Purchased Amount is required.',
         ]);
 
         DB::beginTransaction();
@@ -67,6 +90,7 @@ class productController extends Controller
         $product = Product::create([ 
             'user_id' => Auth::id(),
             'unique_id' => $uniqueId,
+            'unique_number' => $request->unique_number,
             'status' => 1,
         ]);
 
@@ -77,6 +101,7 @@ class productController extends Controller
             'age_type' => $request->age_type,
             'age' => $request->age,
             'weight' => $request->weight,
+            'purchased_amount' => $request->purchased_amount,
         ]);
 
         if ($request->hasFile('image')) {
@@ -126,6 +151,14 @@ class productController extends Controller
             'age_type' => 'required',
             'age' => 'required|numeric|min:1',
             'weight' => 'required|numeric|min:1',
+            'purchased_amount' => 'required|numeric|min:1',
+            'sold_amount' => ['nullable','numeric','min:1','required_if:status,3'],
+            // 'unique_number' => ['nullable','string','max:20',
+            //     Rule::unique('products')->where(function ($query) {
+            //         return $query->where('user_id', Auth::id());
+            //     })->ignore($request->id), // ignore current category id
+            // ],
+            
         ], 
         [
             'category.required' => 'Category is required.',
@@ -133,6 +166,8 @@ class productController extends Controller
             'age_type.required' => 'Age Type is required.',
             'age.required'      => 'Age is required.',
             'weight.required'   => 'Weight is required.',
+            'purchased_amount.required'   => 'Purchased Amount is required.',
+            'sold_amount.required_if' => 'The sold amount is required when status is sold out.',
         ]);
 
         DB::beginTransaction();
@@ -143,6 +178,7 @@ class productController extends Controller
 
         $product->update([ 
             'status' => $request->status,
+            // 'unique_number' => $request->unique_number,
         ]);
 
         $product_detail = ProductDetail::create([ 
@@ -152,6 +188,8 @@ class productController extends Controller
             'age_type' => $request->age_type,
             'age' => $request->age,
             'weight' => $request->weight,
+            'purchased_amount' => $request->purchased_amount,
+            'sold_amount' => $request->sold_amount,
         ]);
 
         if ($request->hasFile('image')) {
@@ -199,10 +237,12 @@ class productController extends Controller
         $product = Product::with('details')->findOrFail($id);
         $detail = ProductDetail::where([['product_id', $product->id],['is_delete',0]])->latest('id')->first();
 
-        $details = "Product: {$product->unique_id}\n\n"
+        $details = "Product: " . ($product->unique_number ?? $product->unique_id) . "\n\n"
          . "Category: {$detail->category->name}\n\n"
          . "Age: {$detail->age} {$detail->age_type}\n\n"
          . "Weight: {$detail->weight}\n\n"
+         . "Purchased Amount: {$detail->purchased_amount}\n\n"
+         . "Sold Amount: " . ($detail->sold_amount ?: '-') . "\n\n"
          . "More: " . url('/products/'.$product->id.'/view');
 
 
@@ -220,6 +260,20 @@ class productController extends Controller
 
         return view('products.all_qrcode', compact('products'));
 
+    }
+
+    public function download_excel(Request $request, $id = null)
+    {
+        if($id === null)
+        {
+            return Excel::download(new ProductsExport, 'products.xlsx');
+        }
+        else
+        {
+            return Excel::download(new ProductExport($id), 'product_'.$id.'.xlsx');
+
+        }
+        
     }
 
 }

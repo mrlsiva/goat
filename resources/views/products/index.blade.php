@@ -33,9 +33,27 @@
 				    	<a href="{{route('product.download_all')}}" target="_blank">
 				    		<button class="btn btn-primary">Print all Product QR</button>
 				    	</a>
+				    	<a href="{{route('product.download_excel')}}">
+				    		<button class="btn btn-primary">Download Excel</button>
+				    	</a>
 				    @endif
 		      	</div>
 		    </div>
+
+		    <form method="get" action="{{route('product.index')}}" >
+			    <div class="row mb-3">
+			    	<div class="col-md-11">
+			    		<div class="input-group input-group-lg">
+			    			<span class="input-group-text" id="addon-wrapping"><i class="fa fa-search" ></i></span>
+			    			<input type="text" class="form-control" placeholder="Product ID" aria-label="Product ID" aria-describedby="addon-wrapping" name="product_id" value="{{ request('product_id') }}">
+			    		</div>
+			    	</div>
+
+				    <div class="col-md-1">
+				    	<button class="btn btn-primary"> Search </button>
+				    </div>
+			    </div>
+		    </form>
 
 		    @if(session('success'))
 		    <div class="alert alert-success">
@@ -52,8 +70,10 @@
 			        			<th>ID</th>
 			        			<th>Category</th>
 			        			<th>Age</th>
-			        			<th>Weight</th>
+			        			<th>Weight (KG)</th>
 			        			<th>Gender</th>
+			        			<th>Purchased Amount (₹)</th>
+			        			<th>Sold Amount (₹)</th>
 			        			<th>Status</th>
 			        			<th class="text-end">Action</th>
 			        		</tr>
@@ -69,11 +89,13 @@
 			        			<td>
 			        				{{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
 			        			</td>
-			        			<td>{{$product->unique_id}}</td>
+			        			<td>@if($product->unique_number == null) {{ $product->unique_id }} @else {{ $product->unique_number }} @endif</td>
 			        			<td>{{$product_detail->category->name}}</td>
 			        			<td>{{$product_detail->age}} {{$product_detail->age_type}}</td>
 			        			<td>{{$product_detail->weight}}</td>
 			        			<td>{{$product_detail->gender->name}}</td>
+			        			<td>{{$product_detail->purchased_amount}}</td>
+			        			<td>@if($product_detail->sold_amount != null) {{$product_detail->sold_amount}} @else - @endif</td>
 			        			<td>
 			        				@if($product->status == 1)
 			        					<span class="fw-bold badge bg-soft-success text-success">Active</span>

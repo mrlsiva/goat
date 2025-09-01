@@ -8,6 +8,13 @@
 	  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	</head>
+
+	<style type="text/css">
+		.secret{
+			display: none!important;
+		}
+	</style>
+
 	<body class="bg-light">
 
 	 	<div class="container mt-5">
@@ -32,7 +39,7 @@
 		    <div class="card">
 			    <div class="card-body">
 			    	<div class="d-flex justify-content-between align-items-center mb-4">
-				      	<h4>Product: {{ $product->unique_id }}</h4>
+				      	<h4>Product: @if($product->unique_number == null) {{ $product->unique_id }} @else {{ $product->unique_number }} @endif </h4>
 				      	<a href="{{route('product.index')}}" class="btn bg-primary text-white btn-sm">Back</a>
 				    </div>
 			        
@@ -88,12 +95,11 @@
 			                            <td>{{ \Carbon\Carbon::parse($detail->created_at)->format('d M Y') }}</td>
 			                            <td class="text-end">
 			                            	@if($loop->iteration > 1)
-				                            	<a href="{{ route('product.detail_delete', ['id' => $detail->id]) }}" onclick="return confirm('Are you sure you want to delete this product?')">
-												    <button class="btn btn-sm btn-danger">
+				                            	<a href="{{ route('product.detail_delete', ['id' => $detail->id]) }}" onclick="return {{ $product->status == 3 ? 'false' : 'confirm(\'Are you sure you want to delete this product?\')' }}">
+												    <button class="btn btn-sm btn-danger" {{ $product->status == 3 ? 'disabled' : '' }}>
 												        <i class="fa fa-trash" title="Delete"></i>
 												    </button>
 												</a>
-
 			        						@else
 			        							-
 			        						@endif
@@ -158,6 +164,12 @@
 							</select>
 						</div>
 
+						<!-- Purchased Amount -->
+				        <div class="mb-3">
+				          <label for="purchased_amount" class="form-label">Purchased Amount (In ₹)</label>
+				          <input type="number" class="form-control" id="purchased_amount" name="purchased_amount" placeholder="Enter Purchased Amount" required readonly="" value="{{$detail->purchased_amount}}">
+				        </div>
+
 						<!-- Age Type Dropdown -->
 						<div class="mb-3">
 							<label for="age_type" class="form-label">Age Type</label>
@@ -192,9 +204,16 @@
 							</select>
 						</div>
 
+						<!-- Sold Amount -->
+				        <div class="mb-3 secret" id="soldAmount">
+				          <label for="sold_amount" class="form-label">Sold Amount (In ₹)</label>
+				          <input type="number" class="form-control" id="sold_amount" name="sold_amount" placeholder="Enter Sold Amount" value="{{$detail->sold_amount}}">
+				        </div>
+
+
 						<div class="d-flex justify-content-center">
 						<!-- Submit Button -->
-						<button type="submit" class="btn btn-success">Update Product</button>
+							<button type="submit" class="btn btn-success" {{ $product->status == 3 ? 'disabled' : '' }}> Update Product </button>
 						</div>
 					</form>
 			    </div>
@@ -206,6 +225,29 @@
 
 	  	<!-- Bootstrap JS -->
 	  	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	  	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+	  	<script type="text/javascript">
+	  		
+	  		jQuery(document).ready(function ()
+			{
+			    jQuery('#status').on('change', function () {
+
+			        var status = jQuery(this).val();
+
+			        if(status == 3)
+			        {
+			        	$('#soldAmount').removeClass('secret'); 
+			        }
+			        else
+			        {
+			        	$('#soldAmount').addClass('secret');
+			        }
+
+			    });
+			});
+
+	  	</script>
 
 	</body>
 </html>

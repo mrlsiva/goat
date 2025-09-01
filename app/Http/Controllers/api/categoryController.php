@@ -33,7 +33,7 @@ class categoryController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => ['required','string','max:50',
+            'name' => ['required','string','max:20',
                 Rule::unique('categories')->where(function ($query) {
                     return $query->where('user_id', Auth::id());
                 }),
@@ -68,7 +68,7 @@ class categoryController extends Controller
     {
 
         $rules = [
-            'name' => ['required','string','max:50',
+            'name' => ['required','string','max:20',
                 Rule::unique('categories')->where(function ($query) {
                     return $query->where('user_id', Auth::id());
                 })->ignore($request->category_id), // ignore current category id

@@ -58,7 +58,7 @@ class authController extends Controller
 
         DB::commit();
 
-        return $this->successResponse("Success", 200,"Successfully Registered");
+        return $this->successResponse($user, 200,"Successfully Registered");
     }
 
     public function login(Request $request)

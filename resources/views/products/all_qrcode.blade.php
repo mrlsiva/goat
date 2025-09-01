@@ -49,13 +49,16 @@
 
 			<div class="qr-item">
 				{!! QrCode::size(100)->generate(
-				    "Product: {$product->unique_id}\n\n".
+				    "Product: " . ($product->unique_number ?? $product->unique_id) . "\n\n".
 				    "Gender: {$detail->gender->name}\n\n".
 				    "Category: {$detail->category->name}\n\n".
 				    "Age: {$detail->age} {$detail->age_type}\n\n".
 				    "Weight: {$detail->weight}\n\n".
+				    "Purchased Amount: {$detail->purchased_amount}\n\n".
+				    "Sold Amount: " . ($detail->sold_amount ?: '-') . "\n\n".
 				    "More: " . url('/products/'.$product->id.'/view')
 				) !!}
+
 			</div>
 			
 		@endforeach

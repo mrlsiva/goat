@@ -21,7 +21,7 @@ class categoryController extends Controller
     {
 
         $validatedData = $request->validate([
-            'name' => ['required','string','max:50',
+            'name' => ['required','string','max:20',
                 Rule::unique('categories')->where(function ($query) {
                     return $query->where('user_id', Auth::id());
                 }),
@@ -49,8 +49,8 @@ class categoryController extends Controller
         
 
         $request->validate([
-            'category' => ['required','string','max:50',
-                Rule::unique('categories')->where(function ($query) {
+            'category' => ['required','string','max:20',
+                Rule::unique('categories', 'name')->where(function ($query) {
                     return $query->where('user_id', Auth::id());
                 })->ignore($request->category_id), // ignore current category id
             ],

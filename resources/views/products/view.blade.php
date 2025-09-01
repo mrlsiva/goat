@@ -12,14 +12,19 @@
 	 	<div class="container mt-5">
 		    <div class="d-flex justify-content-between align-items-center mb-4">
 		      	<h2 class="fw-bold">Product Detail</h2>
-		      	@auth
-		      	<a href="{{route('product.edit', ['id' => $product->id])}}" class="btn bg-primary text-white btn-sm">Edit</a>
-		      	@endauth
+		      	<div>
+			      	<a href="{{route('product.download_excel', ['id' => $product->id])}}">
+				        <button class="btn btn-primary">Download Excel</button>
+				    </a>
+			      	@auth
+			      	<a href="{{route('product.edit', ['id' => $product->id])}}" class="btn bg-primary text-white btn-sm">Edit</a>
+			      	@endauth
+		      	</div>
 		    </div>
 
 		    <div class="card">
 			    <div class="card-body">
-			        <h4>Product: {{ $product->unique_id }}</h4>
+			        <h4>Product: @if($product->unique_number == null) {{ $product->unique_id }} @else {{ $product->unique_number }} @endif</h4>
 			        <p>
 			        	Status: 
 			        	@if($product->status == 1)
@@ -43,6 +48,16 @@
 			        <p>
 			        	Gender: 						    
 			        	<span class="fw-bold">{{$detail->gender->name}}</span>
+			        </p>
+
+			        <p>
+			        	Purchased Amount (In ₹): 						    
+			        	<span class="fw-bold">{{$detail->purchased_amount}}</span>
+			        </p>
+
+			        <p>
+			        	Sold Amount (In ₹): 						    
+			        	<span class="fw-bold">@if($detail->sold_amount != null) {{$detail->sold_amount}} @else - @endif</span>
 			        </p>
 
 			        <h5>Product Details</h5>

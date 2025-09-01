@@ -40,6 +40,12 @@
 				<form method="post" action="{{route('product.store')}}" enctype="multipart/form-data">
 	        		@csrf
 
+	        		<!-- Product ID -->
+			        <div class="mb-3">
+			          <label for="unique_number" class="form-label">Product ID</label>
+			          <input type="text" class="form-control" id="unique_number" name="unique_number" placeholder="Enter Product ID" required >
+			        </div>
+
 					<!-- Category Dropdown -->
 					<div class="mb-3">
 						<label for="category" class="form-label">Category</label>
@@ -83,6 +89,12 @@
 			        <div class="mb-3">
 			          <label for="weight" class="form-label">Weight (In Kgs)</label>
 			          <input type="text" class="form-control" id="weight" name="weight" placeholder="Enter Weight" required >
+			        </div>
+
+			        <!-- Purchased Amount -->
+			        <div class="mb-3">
+			          <label for="purchased_amount" class="form-label">Purchased Amount (In ₹)</label>
+			          <input type="number" class="form-control" id="purchased_amount" name="purchased_amount" placeholder="Enter Purchased Amount" required >
 			        </div>
 
 					<!-- Image Upload -->
