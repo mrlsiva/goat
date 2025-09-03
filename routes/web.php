@@ -38,7 +38,7 @@ Route::group(['middleware' => ['web','auth']], function (){
             Route::get('/{id}/detail_delete',[productController::class, 'detail_delete'])->name('detail_delete');
             Route::get('/{id}/download',[productController::class, 'download'])->name('download');
             Route::get('/download_all',[productController::class, 'download_all'])->name('download_all');
-            Route::get('/{id?}/download_excel',[productController::class, 'download_excel'])->name('download_excel');
+            Route::get('/download_excel/{id?}',[productController::class, 'download_excel'])->name('download_excel');
         });
     });
 
